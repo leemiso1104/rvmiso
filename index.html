@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Miso's Film Review Archive</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Edu+VIC+WA+NT+Beginner:wght@400;500;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;500;600;700&family=Pretendard:wght@400;600;800&display=swap');
+
+    body {
+      margin: 0;
+      font-family: 'Pretendard', sans-serif;
+      background-image: url('dessert.jpeg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .main-title {
+      font-size: 2vw;
+      font-weight: 700;
+      color: #fff;
+      margin: 10px 0;
+      text-align: center;
+      font-family: 'Edu VIC WA NT Beginner', cursive;
+    }
+
+    .sub-title {
+      font-size: 1.8vw;
+      font-weight: 500;
+      color: #ddd;
+      margin: 0 0 15px;
+      text-align: center;
+      font-family: 'Noto Serif KR', serif;
+    }
+
+    .header {
+      width: 100%;
+      text-align: center;
+      padding: 10px 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .button {
+      background-color: #444;
+      color: #fff;
+      border: none;
+      padding: 5px 15px;
+      font-size: 0.8vw;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    }
+
+    .button:hover {
+      background-color: #666;
+      transform: scale(1.1);
+    }
+
+    .text-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: 10px;
+      width: 80%;
+      flex: 1;
+      transition: text-align 0.3s ease;
+    }
+
+    .line {
+      font-size: 1.5vw;
+      font-weight: 400;
+      line-height: 1.5;
+      margin: 0;
+      text-align: inherit;
+      transition: transform 0.2s ease, font-size 0.2s ease, font-weight 0.2s ease;
+    }
+
+    .footer {
+      font-size: 1.5vw;
+      color: #aaa;
+      text-align: center;
+      margin: 15px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="main-title">Miso's Film Review Archive</div>
+  <div class="sub-title">나미비아의 사막</div>
+
+  <div class="header">
+    <button class="button" id="toggleFontButton">서체 변경</button>
+    <button class="button" id="toggleWeightButton">굵기 변경</button>
+    <button class="button" id="learnMoreButton">더 알아보기</button>
+    <button class="button music-button" id="musicToggle">음악</button>
+  </div>
+
+  <div class="text-container" id="textContainer">
+    <!-- 줄별 텍스트 -->
+  </div>
+
+  <div class="footer">마우스를 드래그 해 봐!</div>
+
+  <audio id="backgroundMusic" src="back.mp3" loop></audio>
+
+  <script>
+    const text = "나미비아의 사막은 인물의 빈칸을 전혀 채워주지 않는 캐릭터 스터디, 무언가를 얻어간 듯 하나 결국 제자리에 맴도는 성장 영화. 부국제에서 본 영화 중 손에 꼽게 재밌었다.";
+    const container = document.getElementById("textContainer");
+    const backgroundMusic = document.getElementById("backgroundMusic");
+    const musicToggle = document.getElementById("musicToggle");
+
+    let isMusicPlaying = false;
+
+    // 텍스트 랜덤 줄바꿈
+    const splitTextRandomly = (text, min, max) => {
+      const lines = [];
+      while (text.length > 0) {
+        const length = Math.floor(Math.random() * (max - min + 1)) + min;
+        lines.push(text.slice(0, length));
+        text = text.slice(length);
+      }
+      return lines;
+    };
+
+    // 텍스트 렌더링
+    const renderText = () => {
+      const lines = splitTextRandomly(text, 4, 10); // 4~10 글자씩 랜덤
+      container.innerHTML = '';
+      lines.forEach((line) => {
+        const p = document.createElement("p");
+        p.classList.add("line");
+        p.textContent = line;
+        container.appendChild(p);
+      });
+    };
+
+    renderText();
+
+    // 음악 토글
+    musicToggle.addEventListener("click", () => {
+      if (isMusicPlaying) {
+        backgroundMusic.pause();
+        isMusicPlaying = false;
+      } else {
+        backgroundMusic.play();
+        isMusicPlaying = true;
+      }
+    });
+
+    // 서체 변경
+    let isSerif = false;
+    const toggleFontButton = document.getElementById("toggleFontButton");
+    toggleFontButton.addEventListener("click", () => {
+      isSerif = !isSerif;
+      document.body.style.fontFamily = isSerif ? "'Noto Serif KR', serif" : "'Pretendard', sans-serif";
+    });
+
+    // 굵기 변경
+    const toggleWeightButton = document.getElementById("toggleWeightButton");
+    let currentWeightIndex = 0;
+    const weightSteps = { serif: [300, 500, 700], sansSerif: [400, 600, 800] };
+
+    toggleWeightButton.addEventListener("click", () => {
+      currentWeightIndex = (currentWeightIndex + 1) % 3;
+      const weights = isSerif ? weightSteps.serif : weightSteps.sansSerif;
+      document.querySelectorAll(".line").forEach((line) => {
+        line.style.fontWeight = weights[currentWeightIndex];
+      });
+    });
+
+    // 마우스 이동 인터랙션
+    document.addEventListener("mousemove", (event) => {
+      const mouseX = event.clientX;
+      const mouseY = event.clientY;
+      const screenWidth = window.innerWidth;
+      const screenHeight = window.innerHeight;
+
+      const lines = document.querySelectorAll(".line");
+      const totalLines = lines.length;
+
+      // 좌/우 드래그 시 대각선 쏠림
+      lines.forEach((line, index) => {
+        const progress = index / totalLines;
+        const offsetX = (mouseX / screenWidth - 0.5) * 100 * progress;
+        const offsetY = (mouseX / screenWidth - 0.5) * progress * 25;
+        line.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
+      });
+
+      // 위/아래 드래그 시 글자 크기 변경
+      lines.forEach((line, index) => {
+        const progress = index / totalLines;
+        if (mouseY < screenHeight / 2) {
+          const scaleUp = 2 - progress;
+          line.style.fontSize = `${Math.max(1, scaleUp * 1.5)}vw`;
+        } else {
+          const scaleDown = progress + 1;
+          line.style.fontSize = `${Math.max(1, scaleDown * 1.5)}vw`;
+        }
+      });
+    });
+  </script>
+</body>
+</html>
+
